@@ -87,15 +87,14 @@ function animate() {
       canvas.width / 2 - enemy.x,
       canvas.height / 2 - enemy.y
     );
-    console.log(distEnd);
     if (distEnd - enemy.radius - player.radius < 1) {
       location.reload();
     }
     projectiles.forEach((projectile, indexProjectile) => {
       const dist = Math.hypot(projectile.x - enemy.x, projectile.y - enemy.y);
       if (dist - enemy.radius - projectile.radius < 1) {
-        enemy.radius -= 4;
-        if (enemy.radius <= 0) {
+        enemy.radius -= 7;
+        if (enemy.radius <= 5) {
           enemies.splice(indexEnemy, 1);
         }
         projectiles.splice(indexProjectile, 1);
@@ -117,7 +116,7 @@ function animate() {
 
 function spawnEnemies() {
   setInterval(() => {
-    const radius = Math.random() * (30 - 4) + 4;
+    const radius = Math.random() * (30 - 8) + 8;
     let x;
     let y;
     if (Math.random() < 0.5) {
@@ -137,7 +136,6 @@ function spawnEnemies() {
 }
 
 function getAngle(clickX, clickY) {
-  console.log(clickX, clickY);
   const angle = Math.atan2(
     clickY - canvas.height / 2,
     clickX - canvas.width / 2
@@ -145,10 +143,22 @@ function getAngle(clickX, clickY) {
   return { x: Math.cos(angle) * 5, y: Math.sin(angle) * 5 };
 }
 
-window.addEventListener("click", (event) => {
-  let projectileVelocity = getAngle(event.clientX, event.clientY);
-  projectiles.push(new Projectile(x, y, 5, "pink", projectileVelocity));
-});
+function shotProjectile(time) {
+  //   let projectileVelocity = velocity;
+  let lastMove = 0;
+  let projectileVelocity = { x: 0, y: 0 };
+  setInterval(() => {
+    projectiles.push(new Projectile(x, y, 5, "pink", projectileVelocity));
+  }, time);
+  window.addEventListener("mousemove", (event) => {
+    if (Date.now() - lastMove > time) {
+      projectileVelocity = getAngle(event.clientX, event.clientY);
+      lastMove = Date.now();
+    }
+  });
+}
 
-animate();
+shotProjectile(200);
+
+// animate();
 spawnEnemies();
