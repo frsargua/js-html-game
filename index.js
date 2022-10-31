@@ -76,6 +76,7 @@ let player;
 let projectiles;
 let enemies;
 let score;
+let spawnSetInterval;
 
 function init() {
   player = new Player(x, y, 10, "white");
@@ -101,6 +102,7 @@ function animate() {
       canvas.height / 2 - enemy.y
     );
     if (distEnd - enemy.radius - player.radius < 1) {
+      clearInterval(spawnSetInterval);
       startGameEl.style.display = "flex";
       scoreContainerEl.innerText = score;
       scoreContainerEl.style.display = "block";
@@ -134,7 +136,7 @@ function animate() {
 }
 
 function spawnEnemies() {
-  setInterval(() => {
+  spawnSetInterval = setInterval(() => {
     const radius = Math.random() * (30 - 8) + 8;
     let x;
     let y;
@@ -152,6 +154,8 @@ function spawnEnemies() {
 
     enemies.push(new Enemy(x, y, radius, color, velocity));
   }, 2000);
+
+  clearInterval;
 }
 
 function getAngle(clickX, clickY) {
