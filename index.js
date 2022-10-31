@@ -77,6 +77,7 @@ let projectiles;
 let enemies;
 let score;
 let spawnSetInterval;
+let projectilesInterval;
 
 function init() {
   player = new Player(x, y, 10, "white");
@@ -103,6 +104,7 @@ function animate() {
     );
     if (distEnd - enemy.radius - player.radius < 1) {
       clearInterval(spawnSetInterval);
+      clearInterval(projectilesInterval);
       startGameEl.style.display = "flex";
       scoreContainerEl.innerText = score;
       scoreContainerEl.style.display = "block";
@@ -170,15 +172,17 @@ function shotProjectile(time) {
   //   let projectileVelocity = velocity;
   let lastMove = 0;
   let projectileVelocity = { x: 0, y: 0 };
-  setInterval(() => {
-    projectiles.push(new Projectile(x, y, 5, "pink", projectileVelocity));
-  }, time);
+
   window.addEventListener("mousemove", (event) => {
     if (Date.now() - lastMove > time) {
       projectileVelocity = getAngle(event.clientX, event.clientY);
       lastMove = Date.now();
     }
   });
+
+  projectilesInterval = setInterval(() => {
+    projectiles.push(new Projectile(x, y, 5, "pink", projectileVelocity));
+  }, time);
 }
 
 function runGame() {
