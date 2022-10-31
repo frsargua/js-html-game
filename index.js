@@ -1,4 +1,8 @@
 const canvas = document.getElementById("canvas");
+const startGameEl = document.getElementById("card--container");
+const scoreContainerEl = document.getElementById("score--container");
+const scoreEl = document.getElementById("score");
+const connerScoreEl = document.getElementById("conner--score");
 
 const c = canvas.getContext("2d");
 
@@ -67,13 +71,22 @@ class Enemy {
 
 const x = canvas.width / 2;
 const y = canvas.height / 2;
-const player = new Player(x, y, 10, "white");
 
-const projectiles = [];
-const enemies = [];
+let player;
+let projectiles;
+let enemies;
+let score;
 
+function init() {
+  player = new Player(x, y, 10, "white");
+  projectiles = [];
+  enemies = [];
+  score = 0;
+}
+
+let animator;
 function animate() {
-  requestAnimationFrame(animate);
+  animator = requestAnimationFrame(animate);
   c.fillStyle = "rgba(0,0,0,0.1";
   c.fillRect(0, 0, canvas.width, canvas.height);
   player.draw();
@@ -88,15 +101,21 @@ function animate() {
       canvas.height / 2 - enemy.y
     );
     if (distEnd - enemy.radius - player.radius < 1) {
-      location.reload();
+      startGameEl.style.display = "flex";
+      scoreContainerEl.innerText = score;
+      scoreContainerEl.style.display = "block";
+      cancelAnimationFrame(animator);
     }
     projectiles.forEach((projectile, indexProjectile) => {
       const dist = Math.hypot(projectile.x - enemy.x, projectile.y - enemy.y);
       if (dist - enemy.radius - projectile.radius < 1) {
         enemy.radius -= 7;
         if (enemy.radius <= 5) {
+          score += 100;
           enemies.splice(indexEnemy, 1);
         }
+        score += 100;
+        connerScoreEl.innerText = score;
         projectiles.splice(indexProjectile, 1);
       }
 
@@ -129,7 +148,7 @@ function spawnEnemies() {
     const color = `hsl(${Math.random() * 360},50%,50%)`;
 
     const angle = Math.atan2(canvas.height / 2 - y, canvas.width / 2 - x);
-    const velocity = { x: Math.cos(angle) * 2, y: Math.sin(angle) * 2 };
+    const velocity = { x: Math.cos(angle) * 4, y: Math.sin(angle) * 4 };
 
     enemies.push(new Enemy(x, y, radius, color, velocity));
   }, 2000);
@@ -158,7 +177,11 @@ function shotProjectile(time) {
   });
 }
 
-shotProjectile(200);
-
-// animate();
-spawnEnemies();
+function runGame() {
+  console.log(scoreContainerEl.style);
+  init();
+  animate();
+  spawnEnemies();
+  shotProjectile(400);
+  startGameEl.style.display = "none";
+}
