@@ -67,14 +67,15 @@ class Enemy {
 
 const x = canvas.width / 2;
 const y = canvas.height / 2;
-const player = new Player(x, y, 30, "blue");
+const player = new Player(x, y, 10, "white");
 
 const projectiles = [];
 const enemies = [];
 
 function animate() {
   requestAnimationFrame(animate);
-  c.clearRect(0, 0, canvas.width, canvas.height);
+  c.fillStyle = "rgba(0,0,0,0.1";
+  c.fillRect(0, 0, canvas.width, canvas.height);
   player.draw();
   projectiles.forEach((projectile) => {
     projectile.update();
@@ -126,10 +127,10 @@ function spawnEnemies() {
       x = Math.random() * canvas.width;
       y = canvas.height + radius;
     }
-    const color = "pink";
+    const color = `hsl(${Math.random() * 360},50%,50%)`;
 
     const angle = Math.atan2(canvas.height / 2 - y, canvas.width / 2 - x);
-    const velocity = { x: Math.cos(angle), y: Math.sin(angle) };
+    const velocity = { x: Math.cos(angle) * 2, y: Math.sin(angle) * 2 };
 
     enemies.push(new Enemy(x, y, radius, color, velocity));
   }, 2000);
@@ -141,13 +142,13 @@ function getAngle(clickX, clickY) {
     clickY - canvas.height / 2,
     clickX - canvas.width / 2
   );
-  return { x: Math.cos(angle), y: Math.sin(angle) };
+  return { x: Math.cos(angle) * 5, y: Math.sin(angle) * 5 };
 }
 
 window.addEventListener("click", (event) => {
   let projectileVelocity = getAngle(event.clientX, event.clientY);
-  projectiles.push(new Projectile(x, y, 5, "red", projectileVelocity));
+  projectiles.push(new Projectile(x, y, 5, "pink", projectileVelocity));
 });
 
 animate();
-// spawnEnemies();
+spawnEnemies();
